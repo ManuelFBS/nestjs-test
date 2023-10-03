@@ -1,0 +1,15 @@
+version: '3.1'
+
+services:
+  nestjstest_pg:
+    image: postgres:16.0
+    container_name: nestjstest_pg
+    restart: always
+    environment:
+      POSTGRES_DB: nestjstestdb
+      POSTGRES_USER: manuelfbs
+      POSTGRES_PASSWORD: anothersecret
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 5432:5432
