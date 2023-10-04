@@ -13,6 +13,6 @@ export class UsersEntity extends BaseEntity implements IUser {
   @Column()
   age: number;
 
-  @Column()
+  @Column({ unique: true })
   dniced: number;
 }
