@@ -1,17 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UsersEntity } from '../entity/users.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { UserDTO, UserUpdateDTO } from '../dto/user.dto';
 import { ErrorManager } from 'src/utils/error.manager';
-import { UsersEntity } from '../entity/users.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly userRepository: Repository<UsersEntity>) {}
+  constructor(
+    @InjectRepository(UsersEntity)
+    private readonly userRepository: Repository<UsersEntity>,
+  ) {}
 
   public async createUser(body: UserDTO): Promise<UsersEntity> {
     try {
-      const user = await this.userRepository.save(body);
+      const lastUser: UsersEntity = await this.userRepository
+        .createQueryBuilder('user')
+        .orderBy('user.id', 'DESC')
+        .getOne();
+
+      let initialId = 1001;
+
+      if (lastUser) {
+        initialId = lastUser.id + 1;
+      }
+
+      const newUser = new UsersEntity();
+
+      newUser.id = initialId;
+      newUser.firstName = body.firstName;
+      newUser.lastName = body.lastName;
+      newUser.age = body.age;
+      newUser.dniced = body.dniced;
+
+      const user = await this.userRepository.save(newUser);
 
       return user;
     } catch (error) {
