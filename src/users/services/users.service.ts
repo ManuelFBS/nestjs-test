@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsersEntity } from '../entities/users.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { UserDTO, UserUpdateDTO } from '../dto/user.dto';
 import { ErrorManager } from 'src/utils/error.manager';
-// import { error } from 'console';
+import { UsersEntity } from '../entity/users.entity';
 
 @Injectable()
 export class UsersService {
@@ -53,42 +52,40 @@ export class UsersService {
     } catch (error) {
       throw new ErrorManager.createSignatureError(error.message);
     }
-
-    public async updateUser(
-      body: UserUpdateDTO,
-      id: number,
-    ): Promise<UpdateResult | undefined> {
-      try {
-        const user: UpdateResult = await this.userRepository.update(id, body);
-  
-        if (user.affected === 0) {
-          throw new ErrorManager({
-            type: 'BAD_REQUEST',
-            message: 'No se pudo actualizar...!',
-          });
-        }
-        return user;
-      } catch (error) {
-        throw new ErrorManager.createSignatureError(error.message);
-      }
-    }
-  
-    public async deleteUser(id: number): Promise<DeleteResult | undefined> {
-      try {
-        const user: DeleteResult = await this.userRepository.delete(id);
-  
-        if (user.affected === 0) {
-          throw new ErrorManager({
-            type: 'BAD_REQUEST',
-            message: 'No se pudo eliminar...!',
-          });
-        }
-        return user;
-      } catch (error) {
-        throw new ErrorManager.createSignatureError(error.message);
-      }
-    }  
   }
 
+  public async updateUser(
+    body: UserUpdateDTO,
+    id: number,
+  ): Promise<UpdateResult | undefined> {
+    try {
+      const user: UpdateResult = await this.userRepository.update(id, body);
 
+      if (user.affected === 0) {
+        throw new ErrorManager({
+          type: 'BAD_REQUEST',
+          message: 'No se pudo actualizar...!',
+        });
+      }
+      return user;
+    } catch (error) {
+      throw new ErrorManager.createSignatureError(error.message);
+    }
+  }
+
+  public async deleteUser(id: number): Promise<DeleteResult | undefined> {
+    try {
+      const user: DeleteResult = await this.userRepository.delete(id);
+
+      if (user.affected === 0) {
+        throw new ErrorManager({
+          type: 'BAD_REQUEST',
+          message: 'No se pudo eliminar...!',
+        });
+      }
+      return user;
+    } catch (error) {
+      throw new ErrorManager.createSignatureError(error.message);
+    }
+  }
 }
